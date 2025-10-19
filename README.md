@@ -5,7 +5,7 @@ Project Structure
 
 | File              | Description                                                                              |
 | ----------------- | ---------------------------------------------------------------------------------------- |
-| `writing_time.py` | Predicts average writing time per word for 106 writers using multiple regression models. |
+| `writing_time.py` | Predicts average writing time  for 106 writers using multiple regression models. |
 | `amnesia_all.py`  | Predicts overall amnesia error rate (`Amnesia_all`) from feature data.                   |
 | `amnesia_1.py`    | Predicts single-attempt amnesia error rate (`Amnesia1`).                                 |
 
