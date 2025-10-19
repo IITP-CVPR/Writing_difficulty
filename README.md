@@ -50,6 +50,9 @@ GPU (optional): NVIDIA CUDA 12.x for accelerated XGBoost/LightGBM
 `python writing_time.py`
 
 Outputs:
+
+
+
 Regression plots for all models saved under Regression_Plots_All_Models/
 CSV files with actual vs. predicted writing times
 Console summary of RMSE and R² scores for all models 
@@ -60,6 +63,8 @@ Console summary of RMSE and R² scores for all models
 `python amnesia_1.py`
 
 Output for both:
+
+
 
 Console metrics: MAE, MSE, RMSE, R²
 Sorted performance summary by R² score
