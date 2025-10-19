@@ -25,7 +25,7 @@ pip install pandas numpy scikit-learn matplotlib xgboost lightgbm scipy
 
 # How to Run:
 
-1. Writing Time Prediction
+## 1. Writing Time Prediction
 
 python writing_time.py
 
@@ -34,7 +34,7 @@ Regression plots for all models saved under Regression_Plots_All_Models/
 CSV files with actual vs. predicted writing times
 Console summary of RMSE and R² scores for all models 
 
-2. Amnesia Prediction (Amnesia_all and Amnesia_1)
+## 2. Amnesia Prediction (Amnesia_all and Amnesia_1)
 
 python amnesia_all.py
 python amnesia_1.py
