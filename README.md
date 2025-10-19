@@ -53,9 +53,9 @@ Outputs:
 
 
 
-Regression plots for all models saved under Regression_Plots_All_Models/
-CSV files with actual vs. predicted writing times
-Console summary of RMSE and R² scores for all models 
+1. Regression plots for all models saved under Regression_Plots_All_Models/
+2. CSV files with actual vs. predicted writing times
+3. Console summary of RMSE and R² scores for all models 
 
 ## 2. Amnesia Prediction (Amnesia_all and Amnesia_1)
 
@@ -66,10 +66,10 @@ Output for both:
 
 
 
-Console metrics: MAE, MSE, RMSE, R²
-Sorted performance summary by R² score
-Regression plots in regression4_plots/ (auto-created)
-Best model printed in terminal
+1. Console metrics: MAE, MSE, RMSE, R²
+2. Sorted performance summary by R² score
+3. Regression plots in regression4_plots/ (auto-created)
+4. Best model printed in terminal
 
 # Model & Hyperparameters
 All regression models are executed automatically in a single run — no manual selection is required. The scripts train, evaluate, and compare all models at once, and automatically report the best-performing model based on R².
