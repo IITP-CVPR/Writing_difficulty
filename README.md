@@ -13,7 +13,9 @@ Project Structure
 Install dependencies:
 `pip install pandas numpy scikit-learn matplotlib xgboost lightgbm scipy`
 
-1. Core Python Libraries
+1. Core Python Libraries:
+
+   
 numpy==1.26.4
 pandas==2.2.2
 scipy==1.13.1
@@ -21,14 +23,18 @@ matplotlib==3.9.2
 seaborn==0.13.2
 openpyxl==3.1.5
 
-2. Machine Learning Models
+2. Machine Learning Models:
+
+
 scikit-learn==1.5.1
 xgboost==2.1.1
 lightgbm==4.5.0
 Optional for GPU-accelerated training (if supported)
 cupy-cuda12x==13.2.0
 
-3. Environment Information
+3. Environment Information:
+
+   
 Python >= 3.10
 OS: Ubuntu 22.04 / Windows 10+
 GPU (optional): NVIDIA CUDA 12.x for accelerated XGBoost/LightGBM
