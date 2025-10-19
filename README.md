@@ -1,5 +1,5 @@
 # Writer Performance and Amnesia Prediction
-This repository contains Python scripts for predicting writing times and amnesia error rates across multiple writers using advanced regression models such as Random Forest, XGBoost, LightGBM, SVR, and ensemble regressors. The project explores the relationship between cognitive load and handwriting characteristics, trained on multi-attempt handwriting data.
+This repository contains Python scripts for predicting writing times and amnesia error rates across multiple writers using advanced regression models such as Random Forest, XGBoost, LightGBM, and ensemble regressors. The project explores the relationship between cognitive load and handwriting characteristics, trained on multi-attempt handwriting data.
 
 Project Structure
 
