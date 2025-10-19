@@ -11,7 +11,11 @@ Project Structure
 
 # Requirements
 Install dependencies:
+
+
 pip install pandas numpy scikit-learn matplotlib xgboost lightgbm scipy
+
+
 
 # How to Run:
 
