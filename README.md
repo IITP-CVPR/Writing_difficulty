@@ -11,13 +11,27 @@ Project Structure
 
 # Requirements
 Install dependencies:
+`pip install pandas numpy scikit-learn matplotlib xgboost lightgbm scipy`
 
+1. Core Python Libraries
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.1
+matplotlib==3.9.2
+seaborn==0.13.2
+openpyxl==3.1.5
 
+2. Machine Learning Models
+scikit-learn==1.5.1
+xgboost==2.1.1
+lightgbm==4.5.0
+Optional for GPU-accelerated training (if supported)
+cupy-cuda12x==13.2.0
 
-
-
-pip install pandas numpy scikit-learn matplotlib xgboost lightgbm scipy
-
+3. Environment Information
+Python >= 3.10
+OS: Ubuntu 22.04 / Windows 10+
+GPU (optional): NVIDIA CUDA 12.x for accelerated XGBoost/LightGBM
 
 
 
@@ -27,7 +41,7 @@ pip install pandas numpy scikit-learn matplotlib xgboost lightgbm scipy
 
 ## 1. Writing Time Prediction
 
-python writing_time.py
+`python writing_time.py`
 
 Outputs:
 Regression plots for all models saved under Regression_Plots_All_Models/
@@ -36,8 +50,8 @@ Console summary of RMSE and R² scores for all models
 
 ## 2. Amnesia Prediction (Amnesia_all and Amnesia_1)
 
-python amnesia_all.py
-python amnesia_1.py
+`python amnesia_all.py`
+`python amnesia_1.py`
 
 Output for both:
 
@@ -89,23 +103,4 @@ Red dashed line → Theoretical diagonal (ideal prediction)
 Each model’s RMSE and R² are printed in sorted order.
 The model achieving the highest R² is automatically selected as the best performing model for further predictions.
 
-# Author Notes
-1. Core Python Libraries
-numpy==1.26.4
-pandas==2.2.2
-scipy==1.13.1
-matplotlib==3.9.2
-seaborn==0.13.2
-openpyxl==3.1.5
 
-2. Machine Learning Models
-scikit-learn==1.5.1
-xgboost==2.1.1
-lightgbm==4.5.0
-Optional for GPU-accelerated training (if supported)
-cupy-cuda12x==13.2.0
-
-3. Environment Information
-Python >= 3.10
-OS: Ubuntu 22.04 / Windows 10+
-GPU (optional): NVIDIA CUDA 12.x for accelerated XGBoost/LightGBM
