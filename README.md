@@ -92,10 +92,10 @@ openpyxl==3.1.5
 scikit-learn==1.5.1
 xgboost==2.1.1
 lightgbm==4.5.0
-# Optional for GPU-accelerated training (if supported)
-# cupy-cuda12x==13.2.0
+Optional for GPU-accelerated training (if supported)
+cupy-cuda12x==13.2.0
 
 #  Environment Information
-# Python >= 3.10
-# OS: Ubuntu 22.04 / Windows 10+
-# GPU (optional): NVIDIA CUDA 12.x for accelerated XGBoost/LightGBM
+Python >= 3.10
+OS: Ubuntu 22.04 / Windows 10+
+GPU (optional): NVIDIA CUDA 12.x for accelerated XGBoost/LightGBM
