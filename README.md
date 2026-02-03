@@ -93,7 +93,7 @@ Models Used
 1. Standardization: All features except WriterId are standardized using StandardScaler.
 
 2. Splits:
-Writing time: Train/Val/Test words = 18 : 6 : 8
+Writing time: Train/Val/Test words = 18 : 6 : 6
 Amnesia: 70 % train, 10 % val, 20 % test
 
 3. Evaluation Metrics:
