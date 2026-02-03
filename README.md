@@ -94,7 +94,7 @@ Models Used
 
 2. Splits:
 Writing time: Train/Val/Test words = 18 : 6 : 6
-Amnesia: 70 % train, 10 % val, 20 % test
+Amnesia: 80 % train, 10 % val, 10 % test
 
 3. Evaluation Metrics:
 
