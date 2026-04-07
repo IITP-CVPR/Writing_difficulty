@@ -79,15 +79,15 @@ Models Used
 | Model                                          | Key Hyperparameters                                        |
 | ---------------------------------------------- | ---------------------------------------------------------- |
 | **[Random Forest Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)**| `n_estimators=100`, `random_state=42`                      |
-| **GradientBoostingRegressor**                  | `n_estimators=200`, `learning_rate=0.1`, `max_depth=3`     |
-| **AdaBoostRegressor**                          | `random_state=42`                                          |
-| **XGBoostRegressor**                           | `random_state=42`                                          |
-| **LightGBMRegressor**                          | `n_estimators=200`, `learning_rate=0.1`, `random_state=42` |
-| **KNeighborsRegressor**                        | Default parameters                                         |
-| **SVR**                                        | `kernel='rbf'`, `C=1.0`, `epsilon=0.1`                     |
-| **MLPRegressor**                               | `max_iter=2000`, `random_state=42`                         |
-| **ElasticNet, Ridge, Lasso, LinearRegression** | Default regularization parameters                          |
-| **VotingRegressor**                            | Combination of (Gradient Boosting, Random Forest, XGBoost) |
+| **[GradientBoosting](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html) **                  | `n_estimators=200`, `learning_rate=0.1`, `max_depth=3`     |
+| **[AdaBoost](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html)**                          | `random_state=42`                                          |
+| **[XGBoost](https://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_regression.html)**                           | `random_state=42`                                          |
+| **[LightGBM](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html)**                          | `n_estimators=200`, `learning_rate=0.1`, `random_state=42` |
+| **[KNN Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsRegressor.html)**                        | Default regularization parameters                                         |
+| **[Support Vector Regression](https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html)**                                        | `kernel='rbf'`, `C=1.0`, `epsilon=0.1`                     |
+| **[Neural Network Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPRegressor.html)**                               | `max_iter=2000`, `random_state=42`                         |
+| **[Ridge Regression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html), [Lasso Regression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html), [Linear Regression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html), [Polynomial Regression](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html)** | Default regularization parameters                          |
+| **[Voting Regressor Ensemble](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.VotingRegressor.html)**                            | Default regularization parameters |
 
 Note: The table reports only those hyperparameters that were modified from their default settings in Scikit-learn; all other hyperparameters remain identical to those described in Pedregosa et al., “_Scikit-learn: Machine Learning in Python_,” Journal of Machine Learning Research, vol. 12, pp. 2825–2830, 2011.
 # Model Training Details
