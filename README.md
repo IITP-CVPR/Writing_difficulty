@@ -79,7 +79,7 @@ Models Used
 | Model                                          | Key Hyperparameters                                        |
 | ---------------------------------------------- | ---------------------------------------------------------- |
 | **[Random Forest Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)**| `n_estimators=100`, `random_state=42`                      |
-| **[GradientBoosting](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html) **                  | `n_estimators=200`, `learning_rate=0.1`, `max_depth=3`     |
+| **[GradientBoosting](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)**                  | `n_estimators=200`, `learning_rate=0.1`, `max_depth=3`     |
 | **[AdaBoost](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostRegressor.html)**                          | `random_state=42`                                          |
 | **[XGBoost](https://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_regression.html)**                           | `random_state=42`                                          |
 | **[LightGBM](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html)**                          | `n_estimators=200`, `learning_rate=0.1`, `random_state=42` |
