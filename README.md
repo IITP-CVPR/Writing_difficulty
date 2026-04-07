@@ -78,7 +78,7 @@ Models Used
 
 | Model                                          | Key Hyperparameters                                        |
 | ---------------------------------------------- | ---------------------------------------------------------- |
-| **RandomForestRegressor**                      | `n_estimators=100`, `random_state=42`                      |
+| **[Random Forest Regressor]([https://example.com](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html))**| `n_estimators=100`, `random_state=42`                      |
 | **GradientBoostingRegressor**                  | `n_estimators=200`, `learning_rate=0.1`, `max_depth=3`     |
 | **AdaBoostRegressor**                          | `random_state=42`                                          |
 | **XGBoostRegressor**                           | `random_state=42`                                          |
