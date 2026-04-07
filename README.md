@@ -89,6 +89,7 @@ Models Used
 | **ElasticNet, Ridge, Lasso, LinearRegression** | Default regularization parameters                          |
 | **VotingRegressor**                            | Combination of (Gradient Boosting, Random Forest, XGBoost) |
 
+Note: The table reports only those hyperparameters that were modified from their default settings in Scikit-learn; all other hyperparameters remain identical to those described in Pedregosa et al., “_Scikit-learn: Machine Learning in Python_,” Journal of Machine Learning Research, vol. 12, pp. 2825–2830, 2011.
 # Model Training Details
 1. Standardization: All features except WriterId are standardized using StandardScaler.
 
