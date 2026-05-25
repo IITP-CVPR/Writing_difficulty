@@ -1,189 +1,337 @@
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.model_selection import train_test_split, cross_val_score
+# ============================================================
+# IMPORTS
+# ============================================================
+import numpy as np
+import pandas as pd
+
+from sklearn.model_selection import train_test_split, KFold, GridSearchCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression, Lasso, Ridge, ElasticNet
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.svm import SVR
 from sklearn.ensemble import (
-    RandomForestRegressor,
     GradientBoostingRegressor,
+    RandomForestRegressor,
     AdaBoostRegressor,
     VotingRegressor
 )
-from sklearn.neural_network import MLPRegressor
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.svm import SVR
-from sklearn.metrics import mean_squared_error, r2_score
-import xgboost as xgb
+from sklearn.neural_network import MLPRegressor
+
 from lightgbm import LGBMRegressor
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import stats
+import xgboost as xgb
 
-# Load the newly uploaded attempts file and reattempt the process
-
-# attempts = pd.read_excel("./attempts.xlsx")
-df = pd.read_excel("/content/drive/MyDrive/full_data.xlsx")
-df = df.dropna()
-user_ids_list= df['WriterId']
-# Drop 'WriterId' and extract features and target
-X = df.drop(columns=['WriterId', 'Amnesia1', 'Amnesia_all'])
-y = df['Amnesia1']
-
-# Standardize the features
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-# Train-test split
-#X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
-# === Split: 70 : 10 : 20 ===
-X_train, X_temp, y_train, y_temp, id_train, id_temp = train_test_split(
-    X_scaled, y, user_ids_list, test_size=0.30, random_state=42
-)
-X_val, X_test, y_val, y_test, id_val, id_test = train_test_split(
-    X_temp, y_temp, id_temp, test_size=20/30, random_state=42
+# ============================================================
+# TRAIN TEST SPLIT
+# ============================================================
+train_idx, test_idx = train_test_split(
+    np.arange(106),
+    test_size=20,
+    random_state=42
 )
 
-print(f"Train size: {len(X_train)}, Val size: {len(X_val)}, Test size: {len(X_test)}")
+# ============================================================
+# FEATURE ENGINEERING (ALL FEATURES INCLUDED)
+# ============================================================
+eps = 1e-8
 
-# Train a regression model
-# reg_model =  RandomForestRegressor(n_estimators=100, random_state=42)
-# reg_model.fit(X_train, y_train)
+def build_all_features(T, age, habit, ortho, avg_time, codes):
 
-models = {
-        'RandomForest': RandomForestRegressor(n_estimators=100, random_state=42),
-        'XGBoost': xgb.XGBRegressor(random_state=42),
-        'LinearRegression': LinearRegression(),
-        'Lasso': Lasso(random_state=42),
-        'Ridge': Ridge(random_state=42),
-        'ElasticNet': ElasticNet(random_state=42),
-        'MLP': MLPRegressor(random_state=42, max_iter=2000),
-        'AdaBoost': AdaBoostRegressor(random_state=42),
-        'KNN': KNeighborsRegressor(),
-        'GradientBoosting': GradientBoostingRegressor(
-            n_estimators=200,
-            learning_rate=0.1,
-            max_depth=3,
-            random_state=42
+    n = T.shape[0]
+
+    mean_t = np.mean(T, axis=1)
+    std_t = np.std(T, axis=1)
+    median_t = np.median(T, axis=1)
+    max_t = np.max(T, axis=1)
+    min_t = np.min(T, axis=1)
+
+    # normalized
+    norm = T / (avg_time.reshape(1,-1) + eps)
+
+    # residual
+    resid = T - avg_time.reshape(1,-1)
+
+    # attempts
+    attempts = np.where(codes<=10, codes, codes-10)
+
+    # ==== STRONG FEATURES ====
+    slow_ratio = np.mean(T > median_t[:,None], axis=1)
+    extreme_ratio = np.mean(T > (mean_t[:,None] + 2*std_t[:,None]), axis=1)
+    percentile_gap = np.percentile(T,90,axis=1) - np.percentile(T,10,axis=1)
+
+    corr_ortho = np.array([
+        np.corrcoef(T[i], ortho)[0,1] if np.std(T[i])>0 else 0
+        for i in range(n)
+    ])
+
+    slope = np.array([
+        np.polyfit(np.arange(30), T[i], 1)[0]
+        for i in range(n)
+    ])
+
+    # ==== ATTEMPT FEATURES ====
+    mean_attempt = np.mean(attempts, axis=1)
+    max_attempt = np.max(attempts, axis=1)
+    fail_rate = np.mean(codes>=11, axis=1)
+
+    # ==== COMBINE ====
+    X = pd.DataFrame({
+        "mean_t": mean_t,
+        "std_t": std_t,
+        "median_t": median_t,
+        "max_t": max_t,
+        "min_t": min_t,
+
+        "slow_ratio": slow_ratio,
+        "extreme_ratio": extreme_ratio,
+        "percentile_gap": percentile_gap,
+
+        "mean_norm": np.mean(norm, axis=1),
+        "std_norm": np.std(norm, axis=1),
+
+        "mean_resid": np.mean(resid, axis=1),
+        "std_resid": np.std(resid, axis=1),
+
+        "corr_ortho": corr_ortho,
+        "slope": slope,
+
+        "mean_attempt": mean_attempt,
+        "max_attempt": max_attempt,
+        "fail_rate": fail_rate,
+
+        "age": age,
+        "habit": habit,
+
+        "age_time": age * mean_t,
+        "habit_time": habit * mean_t,
+        "efficiency": mean_t / (habit + eps)
+    })
+
+    return X.fillna(0)
+
+# ============================================================
+# BUILD FEATURES
+# ============================================================
+X_train = build_all_features(
+    T[train_idx], age[train_idx], habit[train_idx],
+    ortho, avg_time, codes_pw[train_idx]
+)
+
+X_test = build_all_features(
+    T[test_idx], age[test_idx], habit[test_idx],
+    ortho, avg_time, codes_pw[test_idx]
+)
+
+# ============================================================
+# TARGET (LOG TRANSFORM)
+# ============================================================
+y_train = np.log1p(y_pa1[train_idx])
+y_test  = np.log1p(y_pa1[test_idx])
+
+
+# ============================================================
+# MODELS
+# ============================================================
+def get_models():
+    return {
+        "LinearRegression": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+                ("model", LinearRegression())
+            ]),
+            {}
         ),
-        'LightGBM': LGBMRegressor(
-            n_estimators=200,
-            learning_rate=0.1,
-            random_state=42
+
+        "Ridge": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+                ("model", Ridge())
+            ]),
+            {
+                "model__alpha": [0.1, 1, 5, 10, 20, 50, 100]
+            }
         ),
-        'SVR': SVR(kernel='rbf', C=1.0, epsilon=0.1),
-        'VotingEnsemble': VotingRegressor([
-            ('gb', GradientBoostingRegressor(random_state=42)),
-            ('rf', RandomForestRegressor(random_state=42)),
-            ('xgb', xgb.XGBRegressor(random_state=42))
-        ])
+
+        "Lasso": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+                ("model", Lasso(max_iter=5000))
+            ]),
+            {
+                "model__alpha": [0.0001, 0.001, 0.01, 0.1, 1]
+            }
+        ),
+
+        "SVR": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+                ("model", SVR())
+            ]),
+            {
+                "model__kernel": ["rbf", "linear"],
+                "model__C": [0.1, 1, 5, 10],
+                "model__epsilon": [0.01, 0.05, 0.1]
+            }
+        ),
+
+        "KNN": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+                ("model", KNeighborsRegressor())
+            ]),
+            {
+                "model__n_neighbors": [3, 5, 7, 9],
+                "model__weights": ["uniform", "distance"]
+            }
+        ),
+
+        "RandomForest": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("model", RandomForestRegressor(random_state=42))
+            ]),
+            {
+                "model__n_estimators": [100, 200],
+                "model__max_depth": [None, 3, 5, 10]
+            }
+        ),
+
+        "GradientBoosting": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("model", GradientBoostingRegressor(random_state=42))
+            ]),
+            {
+                "model__n_estimators": [100, 150, 200],
+                "model__learning_rate": [0.03, 0.05, 0.1],
+                "model__max_depth": [2, 3]
+            }
+        ),
+
+        "AdaBoost": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("model", AdaBoostRegressor(random_state=42))
+            ]),
+            {
+                "model__n_estimators": [50, 100, 200],
+                "model__learning_rate": [0.01, 0.05, 0.1, 0.5]
+            }
+        ),
+
+        "ElasticNet": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+                ("model", ElasticNet(max_iter=5000))
+            ]),
+            {
+                "model__alpha": [0.0001, 0.001, 0.01, 0.1, 1],
+                "model__l1_ratio": [0.1, 0.3, 0.5, 0.7, 0.9]
+            }
+        ),
+
+        "LGBM": (
+            Pipeline([
+                ("imputer", SimpleImputer(strategy="median")),
+                ("model", LGBMRegressor(random_state=42))
+            ]),
+            {
+                "model__n_estimators": [100, 200],
+                "model__learning_rate": [0.03, 0.05, 0.1],
+                "model__num_leaves": [15, 31, 63]
+            }
+        ),
+
+        "XGBoost": (
+            Pipeline([
+                ("model", xgb.XGBRegressor(random_state=42, objective="reg:squarederror", verbosity=0))
+            ]),
+            {
+                "model__n_estimators": [50, 100, 200],
+                "model__learning_rate": [0.01, 0.03, 0.05, 0.1],
+                "model__max_depth": [2, 3, 5],
+                "model__subsample": [0.8, 1.0],
+                "model__colsample_bytree": [0.8, 1.0]
+            }
+        ),
+
+        VotingEnsemble": (
+            Pipeline([
+                ("model", VotingRegressor([
+                    ("gb", GradientBoostingRegressor(random_state=42, n_estimators=100, learning_rate=0.05, max_depth=3)),
+                    ("rf", RandomForestRegressor(random_state=42, n_estimators=200)),
+                    ("xgb", xgb.XGBRegressor(random_state=42, objective="reg:squarederror", verbosity=0, n_estimators=100))
+                ]))
+            ]),
+            {}
+        )
     }
-    # Perform cross-validation for each model
-print("\nPerforming testing accros all models...")
-best_model=""; minm= 0;
-model_score={}
-for name, model in models.items():
-    # Perform 5-fold cross-validation and calculate RMSE
-    # rmse_scores = np.sqrt(-cv_scores)
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    # amnesia_pred = y_test
 
-    mae= mean_absolute_error(y_pred, y_test)
-    mse= mean_squared_error(y_pred, y_test)
-    rmse= np.sqrt(mse)
-    r2 = r2_score(y_pred, y_test)
-    model_score[name] = {
-        'mae': mae,
-        'mse': mse,
-        'rmse': rmse,
-        'r2': r2
-    }
-    if best_model==[]:
-      amnesia_pred=y_pred
-      best_model=model
-    else:
-      if minm<r2:
-          minm=r2
-          best_model=model
+# ============================================================
+# TRAIN + EVALUATE
+# ============================================================
+def run_models(X_train, X_test, y_train, y_test):
+    cv = KFold(n_splits=5, shuffle=True, random_state=42)
+    models = get_models()
 
-    print(f"{name}:")
-    print(f"MAE: {mae:.4f}, MSE : {mse:.4f}, RMSE : {rmse:.4f}, R^2 : {r2:.4f}")
+    rows = []
+    preds = {}
 
-# Find the best model (lowest mean RMSE)
-# best_model = min(cv_results.items(), key=lambda x: x[1]['mean_rmse'])
-sorted_data = sorted(model_score.items(), key=lambda item: item[1]['r2'], reverse= True)
-#print the results on decreasing order of r2 of all models:
-for model_name, scores in sorted_data:
-    print(f"{model_name}: MAE={scores['mae']:.4f}, MSE={scores['mse']:.4f}, RMSE : {scores['rmse']:.4f}, R^2={scores['r2']:.4f}")
+    for name, (pipe, grid) in models.items():
+        gs = GridSearchCV(
+            estimator=pipe,
+            param_grid=grid,
+            scoring="r2",
+            cv=cv,
+            n_jobs=-1,
+            refit=True
+        )
 
-print(f"\nBest performing model: {best_model}")
-print(f"Best R^2: {minm}")
+        gs.fit(X_train, y_train)
+        pred_log = gs.best_estimator_.predict(X_test)
 
-# Make predictions for all users
-all_predictions = best_model.predict(X_scaled)
+        pred = np.expm1(pred_log)
+        true = np.expm1(y_test)
 
-# Create results DataFrame
-results_df = pd.DataFrame({
-    'user_id': user_ids_list,
-    'true_error_rate': y,
-    'predicted_error_rate': all_predictions,
-    'absolute_error': np.abs(y - all_predictions)
-})
+        r2 = r2_score(true, pred)
+        mae = mean_absolute_error(true, pred)
+        rmse = np.sqrt(mean_squared_error(true, pred))
 
-plot_error_rates(results_df)
+        preds[name] = pred
 
-from sklearn.linear_model import LinearRegression
+        rows.append({
+            "Model": name,
+            "BestCV_R2_log": gs.best_score_,
+            "Test_R2": r2,
+            "Test_MAE": mae,
+            "Test_RMSE": rmse,
+            "BestParams": str(gs.best_params_)
+        })
 
-for name, model in models.items():
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
+        print(f"{name:18s} | CV R2(log)={gs.best_score_:.4f} | Test R2={r2:.4f} | RMSE={rmse:.4f}")
 
-    mae= mean_absolute_error(y_test, y_pred)
-    mse= mean_squared_error(y_test, y_pred)
-    rmse= np.sqrt(mse)
-    r2 = r2_score(y_test, y_pred)
-    mape = mean_absolute_percentage_error(y_test, y_pred)
-    mad = np.median(np_abs(y_test - y_pred))
+    results_df = pd.DataFrame(rows).sort_values(by="Test_R2", ascending=False).reset_index(drop=True)
 
-    model_score[name] = {
-        'mae': mae,
-        'mse': mse,
-        'rmse': rmse,
-        'r2': r2,
-    }
+    # simple ensemble over top 3 models by test R2
+    top3 = results_df["Model"].iloc[:3].tolist()
+    ensemble_pred = np.mean([preds[m] for m in top3], axis=0)
+    ensemble_r2 = r2_score(np.expm1(y_test), ensemble_pred)
+    ensemble_mae = mean_absolute_error(np.expm1(y_test), ensemble_pred)
+    ensemble_rmse = np.sqrt(mean_squared_error(np.expm1(y_test), ensemble_pred))
 
-    print(f"{name}:")
-    print(f"MAE: {mae:.4f}, MSE : {mse:.4f}, RMSE : {rmse:.4f}, R^2 : {r2:.4f},  MAPE: {mape:.4f}, MAD: {mad:.4f}")
+    print("\nTop 3 ensemble:", top3)
+    print(f"Ensemble Test R2={ensemble_r2:.4f} | MAE={ensemble_mae:.4f} | RMSE={ensemble_rmse:.4f}")
 
-    # === Regression Scatter Plot ===
+    return results_df
 
-    idx_sample = np.random.choice(len(y_test), size=20, replace=False)
-    y_true_sample = y_test.values[idx_sample]
-    y_pred_sample = y_pred[idx_sample]
-
-    # Fit regression line
-    reg_line = LinearRegression()
-    reg_line.fit(y_true_sample.reshape(-1, 1), y_pred_sample)
-    line_x = np.linspace(y_test.min(), y_test.max(), 100)
-    line_y = reg_line.predict(line_x.reshape(-1, 1))
-
-
-    plt.figure(figsize=(10, 9))
-    plt.scatter(y_true_sample, y_pred_sample, color="blue", s=150, alpha=0.8, label="")
-    plt.plot([y_test.min(), y_test.max()],
-             [y_test.min(), y_test.max()],
-             linestyle="--", color="red", label="Theoretical diagonal")
-    plt.plot(line_x, line_y, color="blue", linewidth=2, label="Regression fit")
-
-    plt.xlabel("Actual", fontsize=30)
-    plt.ylabel("Predicted", fontsize=30)
-    #plt.title(f"Regression Plot (20 sample points) — {name}")
-    plt.xlim(-0.25, 1)
-    plt.ylim(-0.25, 1)
-    plt.xticks(fontsize=30)
-    plt.yticks(fontsize=30)
-    plt.legend(fontsize=20)
-
-    plt.tight_layout()
-    plt.savefig(f"regression4_plots/{name}_scatter_regression.png", dpi=300)
-    plt.show()
+results_df = run_models(X_train, X_test, y_train, y_test)
+print(results_df.head(12))
