@@ -53,7 +53,7 @@ Outputs:
 
 
 
-1. Regression plots for all models saved under Regression_Plots_All_Models/
+1. Regression plots for all models 
 2. CSV files with actual vs. predicted writing times
 3. Console summary of RMSE and R² scores for all models 
 
@@ -68,7 +68,7 @@ Output for both:
 
 1. Console metrics: MAE, RMSE, R²
 2. Sorted performance summary by R² score
-3. Regression plots in regression4_plots/ (auto-created)
+3. Regression plots 
 4. Best model printed in the terminal
 
 # Model & Hyperparameters
