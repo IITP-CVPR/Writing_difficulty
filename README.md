@@ -113,7 +113,6 @@ Blue line → Regression fit
 Red dashed line → Theoretical diagonal (ideal prediction)
 
 # Results Summary
-Each model’s RMSE and R² are printed in sorted order.
 The model achieving the highest R² is automatically selected as the best-performing model for further predictions.
 # Dataset 
 The dataset used for the experiments is uploaded here.
