@@ -66,7 +66,7 @@ Output for both:
 
 
 
-1. Console metrics: MAE, MSE, RMSE, R²
+1. Console metrics: MAE, RMSE, R²
 2. Sorted performance summary by R² score
 3. Regression plots in regression4_plots/ (auto-created)
 4. Best model printed in the terminal
