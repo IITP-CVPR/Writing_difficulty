@@ -1,4 +1,4 @@
-# Writer Performance and Amnesia Prediction
+# Quantifying Character Amnesia in Hindi Handwriting: A Data-Driven Analysis of Orthographic Recall Difficulty
 This repository contains Python scripts for predicting writing times and amnesia error rates across multiple writers using advanced regression models, including Random Forest, XGBoost, LightGBM, and ensemble regressors. The project explores the relationship between cognitive load and handwriting characteristics, trained on multi-attempt handwriting data.
 
 Project Structure
