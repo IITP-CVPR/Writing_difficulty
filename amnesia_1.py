@@ -1,3 +1,102 @@
+import numpy as np
+from openpyxl import load_workbook
+
+FILE_PATH = "<filepath>"   
+SHEET1 = "Sheet1"
+SHEET2 = "Sheet2"
+
+# Sheet1 layout
+S1_START_COL = 2
+S1_END_COL = 107
+S1_FEATURE_ROW_START = 3
+S1_FEATURE_ROW_END = 34
+S1_PA1_ROW = 36
+S1_PAALL_ROW = 37
+
+# Sheet2 layout
+S2_WORD_COL = 1
+S2_ORTHO_COL = 2
+S2_AVGTIME_COL = 3
+S2_CODES_START_COL = 4
+S2_CODES_END_COL = 109
+S2_ROW_START = 1
+S2_ROW_END = 60
+
+# Load workbook
+wb = load_workbook(FILE_PATH, data_only=True)
+ws1 = wb[SHEET1]
+ws2 = wb[SHEET2]
+
+# ----------------------------
+# Read Sheet1
+# ----------------------------
+sheet1_rows = []
+for r in range(S1_FEATURE_ROW_START, S1_FEATURE_ROW_END + 1):
+    vals = []
+    for c in range(S1_START_COL, S1_END_COL + 1):
+        vals.append(ws1.cell(row=r, column=c).value)
+    sheet1_rows.append(vals)
+
+sheet1_rows = np.array(sheet1_rows, dtype=float)
+X_sheet1 = sheet1_rows.T   # (106, 32)
+
+y_pa1 = []
+y_paall = []
+for c in range(S1_START_COL, S1_END_COL + 1):
+    y_pa1.append(ws1.cell(row=S1_PA1_ROW, column=c).value)
+    y_paall.append(ws1.cell(row=S1_PAALL_ROW, column=c).value)
+
+y_pa1 = np.array(y_pa1, dtype=float)
+y_paall = np.array(y_paall, dtype=float)
+
+T = X_sheet1[:, :30]
+age = X_sheet1[:, 30]
+habit = X_sheet1[:, 31]
+
+# ----------------------------
+# Read Sheet2
+# ----------------------------
+words = []
+ortho = []
+avg_time = []
+code_rows = []
+
+for r in range(S2_ROW_START, S2_ROW_END + 1):
+    word = ws2.cell(row=r, column=S2_WORD_COL).value
+    osyll = ws2.cell(row=r, column=S2_ORTHO_COL).value
+    tsec = ws2.cell(row=r, column=S2_AVGTIME_COL).value
+
+    if word is not None and osyll is not None and tsec is not None:
+        words.append(word)
+        ortho.append(float(osyll))
+        avg_time.append(float(tsec))
+
+        row_codes = []
+        for c in range(S2_CODES_START_COL, S2_CODES_END_COL + 1):
+            row_codes.append(ws2.cell(row=r, column=c).value)
+        code_rows.append(row_codes)
+
+words = words[:30]
+ortho = np.array(ortho[:30], dtype=float)
+avg_time = np.array(avg_time[:30], dtype=float)
+code_rows = np.array(code_rows[:30], dtype=float)
+
+codes_pw = code_rows.T   # (106, 30)
+
+print("Loaded successfully from:", FILE_PATH)
+print("T shape:", T.shape)
+print("age shape:", age.shape)
+print("habit shape:", habit.shape)
+print("ortho shape:", ortho.shape)
+print("avg_time shape:", avg_time.shape)
+print("codes_pw shape:", codes_pw.shape)
+print("y_pa1 shape:", y_pa1.shape)
+print("y_paall shape:", y_paall.shape)
+
+
+
+
+
 # ============================================================
 # IMPORTS
 # ============================================================
