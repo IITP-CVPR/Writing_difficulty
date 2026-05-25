@@ -31,7 +31,6 @@ train_idx, test_idx = train_test_split(
     test_size=20,
     random_state=42
 )
-
 # ============================================================
 # FEATURE ENGINEERING (ALL FEATURES INCLUDED)
 # ============================================================
