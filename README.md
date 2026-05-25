@@ -57,9 +57,9 @@ Outputs:
 2. CSV files with actual vs. predicted writing times
 3. Console summary of RMSE and R² scores for all models 
 
-## 2. Amnesia Prediction (Amnesia_all and Amnesia_1)
+## 2. Amnesia Prediction 
 
-`python amnesia_all.py`
+
 `python amnesia_1.py`
 
 Output for both:
